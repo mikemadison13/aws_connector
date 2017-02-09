@@ -25,9 +25,15 @@ class AWSCredentialProvider extends CredentialProvider {
   /**
    * AWS endpoint.
    *
-   * @const string AWS_SECRET_ACCESS_KEY
+   * @const string AWS_ENDPOINT
    */
   const AWS_ENDPOINT = NULL;
+  /**
+   * AWS region.
+   *
+   * @const string AWS_REGION
+   */
+  const AWS_REGION = NULL;
   /**
    * AWS session token.
    *
@@ -92,5 +98,19 @@ class AWSCredentialProvider extends CredentialProvider {
       return $data;
     }
   }
+
+  /**
+     * Get region.
+     *
+     * @return string
+     *   Region string.
+     */
+    public static function getRegion() {
+        $aws_connector_config = \Drupal::config('aws_connector.settings');
+        if (!empty($aws_connector_config)) {
+            $data = $aws_connector_config->get('aws_connector.aws_region');
+            return $data;
+        }
+    }
 
 }
