@@ -2,6 +2,7 @@
 
 namespace Drupal\aws_connector\Form;
 
+use Drupal\aws_connector\Credentials\AWSCredentialProvider;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -73,6 +74,16 @@ class AWSConnectorForm extends ConfigFormBase {
         \Drupal::entityManager()->getViewBuilder('node')->resetCache();
         return parent::submitForm($form, $form_state);
     }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $error_message = AWSCredentialProvider::validateCredentials($form_state->getValue('aws_id'), $form_state->getValue('aws_secret'));
+    if ($error_message != '') {
+      $form_state->setErrorByName('aws_id', $error_message);
+    }
+  }
 
     /**
      * {@inheritdoc}

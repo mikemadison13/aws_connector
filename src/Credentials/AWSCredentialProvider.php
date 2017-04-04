@@ -4,7 +4,10 @@ namespace Drupal\aws_connector\Credentials;
 
 use Aws\Credentials\CredentialProvider;
 use Aws\Credentials\Credentials;
+use Aws\Iot\Exception\IotException;
+use Aws\Iot\IotClient;
 use GuzzleHttp\Promise;
+
 
 /**
  * Extend AWS\Credentials\CredentialProvider to provide AWS credentials.
@@ -83,6 +86,54 @@ class AWSCredentialProvider extends CredentialProvider {
       ];
       return $data;
     }
+  }
+
+
+  /**
+   * Validate credentials.
+   *
+   * @return array
+   *   Credentials array.
+   */
+  public static function validateCredentials($aws_access_key_id = '', $aws_secret_access_key = '') {
+    $profile = 'default';
+    if ($aws_access_key_id == '' || $aws_secret_access_key == '') {
+      $aws_connector_config = \Drupal::config('aws_connector.settings');
+      if (!empty($aws_connector_config)) {
+        $data[$profile] = [
+          'aws_access_key_id' => $aws_connector_config->get('aws_connector.aws_id'),
+          'aws_secret_access_key' => $aws_connector_config->get('aws_connector.aws_secret'),
+        ];
+      }
+    } else {
+      $data[$profile] = [
+        'aws_access_key_id' => $aws_access_key_id,
+        'aws_secret_access_key' => $aws_secret_access_key,
+      ];
+    }
+    $data[$profile]['aws_session_token'] = NULL;
+
+    $a = new Credentials(
+        $data[$profile]['aws_access_key_id'],
+        $data[$profile]['aws_secret_access_key'],
+        $data[$profile]['aws_session_token']
+      );
+
+    $client = new IotClient([
+      'credentials' => $a,
+      'region' => self::getRegion(),
+      'version' => '2015-05-28',
+    ]);
+
+    $error_message = '';
+    try {
+      $endpoint = $client->describeEndpoint();
+    } catch (IotException $e) {
+      $error_message = t('Your credentials are invalid.');
+    }
+
+    return $error_message;
+
   }
 
   /**
