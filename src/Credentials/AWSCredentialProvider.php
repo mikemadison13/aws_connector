@@ -78,12 +78,21 @@ class AWSCredentialProvider extends CredentialProvider {
    *   Credentials array.
    */
   public static function getCredentials() {
+    global $config;
     $aws_connector_config = \Drupal::config('aws_connector.settings');
     if (!empty($aws_connector_config)) {
-      $data = [
-        'aws_access_key_id' => $aws_connector_config->get('aws_connector.aws_id'),
-        'aws_secret_access_key' => $aws_connector_config->get('aws_connector.aws_secret'),
-      ];
+      if (isset($config['aws_connector.aws_id']) ) {
+        $data['aws_access_key_id'] = $config['aws_connector.aws_id'];
+      }
+      else {
+        $data['aws_access_key_id'] = $aws_connector_config->get('aws_connector.aws_id');
+      }
+      if (isset($config['aws_connector.aws_secret']) ) {
+        $data['aws_secret_access_key'] = $config['aws_connector.aws_secret'];
+      }
+      else {
+        $data['aws_secret_access_key'] = $aws_connector_config->get('aws_connector.aws_secret');
+      }
       return $data;
     }
   }
@@ -96,14 +105,23 @@ class AWSCredentialProvider extends CredentialProvider {
    *   Credentials array.
    */
   public static function validateCredentials($aws_access_key_id = '', $aws_secret_access_key = '') {
+    global $config;
     $profile = 'default';
     if ($aws_access_key_id == '' || $aws_secret_access_key == '') {
       $aws_connector_config = \Drupal::config('aws_connector.settings');
       if (!empty($aws_connector_config)) {
-        $data[$profile] = [
-          'aws_access_key_id' => $aws_connector_config->get('aws_connector.aws_id'),
-          'aws_secret_access_key' => $aws_connector_config->get('aws_connector.aws_secret'),
-        ];
+        if (isset($config['aws_connector.aws_id']) ) {
+          $data[$profile]['aws_access_key_id'] = $config['aws_connector.aws_id'];
+        }
+        else {
+          $data[$profile]['aws_access_key_id'] = $aws_connector_config->get('aws_connector.aws_id');
+        }
+        if (isset($config['aws_connector.aws_secret']) ) {
+          $data[$profile]['aws_secret_access_key'] = $config['aws_connector.aws_secret'];
+        }
+        else {
+          $data[$profile]['aws_secret_access_key'] = $aws_connector_config->get('aws_connector.aws_secret');
+        }
       }
     } else {
       $data[$profile] = [
@@ -143,9 +161,15 @@ class AWSCredentialProvider extends CredentialProvider {
    *   Endpoint string.
    */
   public static function getEndpoint() {
+    global $config;
     $aws_connector_config = \Drupal::config('aws_connector.settings');
     if (!empty($aws_connector_config)) {
-      $data = $aws_connector_config->get('aws_connector.aws_endpoint');
+      if (isset($config['aws_connector.aws_endpoint'])) {
+        $data = $config['aws_connector.aws_endpoint'];
+      }
+      else {
+        $data = $aws_connector_config->get('aws_connector.aws_endpoint');
+      }
       return $data;
     }
   }
@@ -157,11 +181,17 @@ class AWSCredentialProvider extends CredentialProvider {
      *   Region string.
      */
     public static function getRegion() {
-        $aws_connector_config = \Drupal::config('aws_connector.settings');
-        if (!empty($aws_connector_config)) {
-            $data = $aws_connector_config->get('aws_connector.aws_region');
-            return $data;
+      global $config;
+      $aws_connector_config = \Drupal::config('aws_connector.settings');
+      if (!empty($aws_connector_config)) {
+        if (isset($config['aws_connector.aws_region'])) {
+          $data = $config['aws_connector.aws_region'];
         }
+        else {
+          $data = $aws_connector_config->get('aws_connector.aws_region');
+        }
+        return $data;
+      }
     }
 
 }
