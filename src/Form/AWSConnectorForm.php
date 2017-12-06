@@ -71,7 +71,7 @@ class AWSConnectorForm extends ConfigFormBase {
         // Need to clear Drupal's page cache so the changes can take effect.
         // @todo pass this data via an API call so we don't need to reset node cache.
 
-        \Drupal::entityManager()->getViewBuilder('node')->resetCache();
+        \Drupal::entityTypeManager()->getViewBuilder('node')->resetCache();
         return parent::submitForm($form, $form_state);
     }
 
