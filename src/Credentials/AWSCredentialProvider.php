@@ -8,15 +8,15 @@ use Aws\Iot\Exception\IotException;
 use Aws\Iot\IotClient;
 use GuzzleHttp\Promise;
 
-
 /**
  * Extend AWS\Credentials\CredentialProvider to provide AWS credentials.
  */
 class AWSCredentialProvider extends CredentialProvider {
 
   /**
-   * Extends AWS ini function by providing credentials out of Drupal configuration
-   * instead of pulling from local .ini file in user's home directory.
+   * Extends AWS ini function by providing credentials out of Drupal
+   * configuration instead of pulling from local .ini file in user's home
+   * directory.
    *
    * @param string|null $profile
    *   Profile to use. If not specified will use the "default" profile.
@@ -58,12 +58,14 @@ class AWSCredentialProvider extends CredentialProvider {
   }
 
   /**
-   * Function that compares Drupal config and config overrides for the given $key
+   * Function that compares Drupal config and config overrides for the given
+   * $key.
    *
    * @param string $key
    *   The key to be searched for in the $settings and configuration objects.
    * @param object $aws_connector_config
    *   The Drupal configuration object for this module.
+   *
    * @return mixed
    *   The resulting value from the object.
    */
@@ -75,7 +77,6 @@ class AWSCredentialProvider extends CredentialProvider {
 
     return $aws_connector_config->get('aws_connector.' . $key);
   }
-
 
   /**
    * Validate credentials.
@@ -92,10 +93,10 @@ class AWSCredentialProvider extends CredentialProvider {
     $data[$profile]['aws_session_token'] = NULL;
 
     $a = new Credentials(
-        $data[$profile]['aws_access_key_id'],
-        $data[$profile]['aws_secret_access_key'],
-        $data[$profile]['aws_session_token']
-      );
+      $data[$profile]['aws_access_key_id'],
+      $data[$profile]['aws_secret_access_key'],
+      $data[$profile]['aws_session_token']
+    );
 
     $client = new IotClient([
       'credentials' => $a,
@@ -106,7 +107,8 @@ class AWSCredentialProvider extends CredentialProvider {
     $error_message = '';
     try {
       $endpoint = $client->describeEndpoint();
-    } catch (IotException $e) {
+    }
+    catch (IotException $e) {
       $error_message = t('Your credentials are invalid.');
     }
 
@@ -125,19 +127,35 @@ class AWSCredentialProvider extends CredentialProvider {
     if ($aws_connector_config) {
       return self::getConfig('aws_endpoint', $aws_connector_config);
     }
+    return '';
   }
 
   /**
-     * Get region.
-     *
-     * @return string
-     *   Region string.
-     */
-    public static function getRegion() {
-      $aws_connector_config = \Drupal::config('aws_connector.settings');
-      if ($aws_connector_config) {
-        return self::getConfig('aws_region', $aws_connector_config);
-      }
+   * Get region.
+   *
+   * @return string
+   *   Region string.
+   */
+  public static function getRegion() {
+    $aws_connector_config = \Drupal::config('aws_connector.settings');
+    if ($aws_connector_config) {
+      return self::getConfig('aws_region', $aws_connector_config);
     }
+    return '';
+  }
+
+  /**
+   * Get the AWS S3 bucket name.
+   *
+   * @return string
+   *   AWS S3 bucket name.
+   */
+  public static function getS3Bucket() {
+    $aws_connector_config = \Drupal::config('aws_connector.settings');
+    if ($aws_connector_config) {
+      return self::getConfig('aws_s3_bucket', $aws_connector_config);
+    }
+    return '';
+  }
 
 }

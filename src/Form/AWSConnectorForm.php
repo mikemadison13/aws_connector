@@ -11,69 +11,77 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class AWSConnectorForm extends ConfigFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormId() {
-        return 'aws_connector_form';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'aws_connector_form';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state) {
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
 
-        $form = parent::buildForm($form, $form_state);
-        $config = $this->config('aws_connector.settings');
-        $form['aws_id'] = array(
-            '#type' => 'textfield',
-            '#title' => $this->t('AWS ID'),
-            '#default_value' => empty($config->get('aws_connector.aws_id')) ? NULL : $config->get('aws_connector.aws_id') ,
-            '#required' => TRUE,
-        );
+    $form = parent::buildForm($form, $form_state);
+    $config = $this->config('aws_connector.settings');
+    $form['aws_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('AWS ID'),
+      '#default_value' => empty($config->get('aws_connector.aws_id')) ? NULL : $config->get('aws_connector.aws_id'),
+      '#required' => TRUE,
+    ];
 
-        $form['aws_secret'] = array(
-            '#type' => 'textfield',
-            '#title' => $this->t('AWS Secret'),
-            '#default_value' => empty($config->get('aws_connector.aws_secret')) ? NULL : $config->get('aws_connector.aws_secret') ,
-            '#required' => TRUE,
-        );
+    $form['aws_secret'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('AWS Secret'),
+      '#default_value' => empty($config->get('aws_connector.aws_secret')) ? NULL : $config->get('aws_connector.aws_secret'),
+      '#required' => TRUE,
+    ];
 
-        $form['aws_region'] = array(
-            '#type' => 'textfield',
-            '#title' => $this->t('AWS Region'),
-            '#default_value' => empty($config->get('aws_connector.aws_region')) ? 'us-east-1' : $config->get('aws_connector.aws_region') ,
-            '#required' => TRUE,
-        );
+    $form['aws_region'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('AWS Region'),
+      '#default_value' => empty($config->get('aws_connector.aws_region')) ? 'us-east-1' : $config->get('aws_connector.aws_region'),
+      '#required' => TRUE,
+    ];
 
-        $form['aws_endpoint'] = array(
-            '#type' => 'textfield',
-            '#title' => $this->t('AWS Endpoint'),
-            '#default_value' => empty($config->get('aws_connector.aws_endpoint')) ? NULL : $config->get('aws_connector.aws_endpoint') ,
-            '#required' => TRUE,
-        );
+    $form['aws_endpoint'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('AWS Endpoint'),
+      '#default_value' => empty($config->get('aws_connector.aws_endpoint')) ? NULL : $config->get('aws_connector.aws_endpoint'),
+      '#required' => TRUE,
+    ];
 
-        return $form;
-    }
+    $form['aws_s3_bucket'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('AWS S3 Bucket'),
+      '#default_value' => empty($config->get('aws_connector.aws_s3_bucket')) ? NULL : $config->get('aws_connector.aws_s3_bucket'),
+      '#required' => TRUE,
+    ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submitForm(array &$form, FormStateInterface $form_state) {
+    return $form;
+  }
 
-        $config = $this->config('aws_connector.settings');
-        $config->set('aws_connector.aws_id', $form_state->getValue('aws_id'));
-        $config->set('aws_connector.aws_secret', $form_state->getValue('aws_secret'));
-        $config->set('aws_connector.aws_region', $form_state->getValue('aws_region'));
-        $config->set('aws_connector.aws_endpoint', $form_state->getValue('aws_endpoint'));
-        $config->save();
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
 
-        // Need to clear Drupal's page cache so the changes can take effect.
-        // @todo pass this data via an API call so we don't need to reset node cache.
+    $config = $this->config('aws_connector.settings');
+    $config->set('aws_connector.aws_id', $form_state->getValue('aws_id'));
+    $config->set('aws_connector.aws_secret', $form_state->getValue('aws_secret'));
+    $config->set('aws_connector.aws_region', $form_state->getValue('aws_region'));
+    $config->set('aws_connector.aws_endpoint', $form_state->getValue('aws_endpoint'));
+    $config->set('aws_connector.aws_s3_bucket', $form_state->getValue('aws_s3_bucket'));
+    $config->save();
 
-        \Drupal::entityTypeManager()->getViewBuilder('node')->resetCache();
-        return parent::submitForm($form, $form_state);
-    }
+    // Need to clear Drupal's page cache so the changes can take effect.
+    // @todo pass this data via an API call so we don't need to reset node cache.
+
+    \Drupal::entityTypeManager()->getViewBuilder('node')->resetCache();
+    return parent::submitForm($form, $form_state);
+  }
 
   /**
    * {@inheritdoc}
@@ -85,14 +93,14 @@ class AWSConnectorForm extends ConfigFormBase {
     }
   }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getEditableConfigNames() {
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
 
-        return [
-            'aws_connector.settings',
-        ];
-    }
+    return [
+      'aws_connector.settings',
+    ];
+  }
 
 }
