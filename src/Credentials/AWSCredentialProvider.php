@@ -49,10 +49,23 @@ class AWSCredentialProvider extends CredentialProvider {
    *   Credentials array.
    */
   public static function getCredentials() {
+    global $config;
+    $data = [];
     $aws_connector_config = \Drupal::config('aws_connector.settings');
     if ($aws_connector_config) {
-      $data['aws_access_key_id'] = self::getConfig('aws_id', $aws_connector_config);
-      $data['aws_secret_access_key'] = self::getConfig('aws_secret', $aws_connector_config);
+      if (isset($config['aws_connector.aws_id'])) {
+        $data['aws_access_key_id'] = $config['aws_connector.aws_id'];
+      }
+      else {
+        $data['aws_access_key_id'] = self::getConfig('aws_id', $aws_connector_config);
+      }
+
+      if (isset($config['aws_connector.aws_id'])) {
+        $data['aws_secret_access_key'] = $config['aws_connector.aws_secret'];
+      }
+      else {
+        $data['aws_secret_access_key'] = self::getConfig('aws_secret', $aws_connector_config);
+      }
       return $data;
     }
   }
@@ -123,9 +136,15 @@ class AWSCredentialProvider extends CredentialProvider {
    *   Endpoint string.
    */
   public static function getEndpoint() {
+    global $config;
     $aws_connector_config = \Drupal::config('aws_connector.settings');
     if ($aws_connector_config) {
-      return self::getConfig('aws_endpoint', $aws_connector_config);
+      if (isset($config['aws_connector.aws_endpoint'])) {
+        return $config['aws_connector.aws_endpoint'];
+      }
+      else {
+        return self::getConfig('aws_endpoint', $aws_connector_config);
+      }
     }
     return '';
   }
@@ -137,9 +156,15 @@ class AWSCredentialProvider extends CredentialProvider {
    *   Region string.
    */
   public static function getRegion() {
+    global $config;
     $aws_connector_config = \Drupal::config('aws_connector.settings');
     if ($aws_connector_config) {
-      return self::getConfig('aws_region', $aws_connector_config);
+      if (isset($config['aws_connector.aws_region'])) {
+        return $config['aws_connector.aws_region'];
+      }
+      else {
+        return self::getConfig('aws_region', $aws_connector_config);
+      }
     }
     return '';
   }
@@ -151,9 +176,15 @@ class AWSCredentialProvider extends CredentialProvider {
    *   AWS S3 bucket name.
    */
   public static function getS3Bucket() {
+    global $config;
     $aws_connector_config = \Drupal::config('aws_connector.settings');
     if ($aws_connector_config) {
-      return self::getConfig('aws_s3_bucket', $aws_connector_config);
+      if (isset($config['aws_connector.aws_s3_bucket'])) {
+        return $config['aws_connector.aws_s3_bucket'];
+      }
+      else {
+        return self::getConfig('aws_s3_bucket', $aws_connector_config);
+      }
     }
     return '';
   }
